@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vehicle.MVC", "Vehicle.MVC\Vehicle.MVC.csproj", "{ECC12144-8650-463F-9A18-869A52803F2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vehicle.Service", "Vehicle.Service\Vehicle.Service.csproj", "{6BFDF4F3-34DA-4869-9521-B2C3EEFF5EB8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ECC12144-8650-463F-9A18-869A52803F2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECC12144-8650-463F-9A18-869A52803F2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECC12144-8650-463F-9A18-869A52803F2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECC12144-8650-463F-9A18-869A52803F2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BFDF4F3-34DA-4869-9521-B2C3EEFF5EB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BFDF4F3-34DA-4869-9521-B2C3EEFF5EB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BFDF4F3-34DA-4869-9521-B2C3EEFF5EB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BFDF4F3-34DA-4869-9521-B2C3EEFF5EB8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {68207FD5-48DD-4E86-AE7D-AF48A2E77E30}
+	EndGlobalSection
+EndGlobal
