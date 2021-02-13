@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using AutoMapper;
 using Vehicle.Service.Models;
-using Vehicle.MVC.Models;
+using Vehicle.MVC.ViewModels;
 
 namespace Vehicle.MVC.AutoMapperConfig
 {

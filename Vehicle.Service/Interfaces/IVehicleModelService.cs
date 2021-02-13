@@ -14,7 +14,7 @@ namespace Vehicle.Service.Interfaces
         void UpdateAsync(VehicleModel vehicleModel);
         void DeleteAsync(VehicleModel vehiclemodel);
         Task<VehicleModel> GetByIdAsync(int? id);
-        Task<IPagedList<VehicleModel>> GetFilterAndSort(string sortOrder, string searchString, int pageNumber, int pageSize);
+        Task<IPagedList<VehicleModel>> Find(string sortOrder, string searchString, int pageNumber);
         Task<List<VehicleMake>> GetMakes();
     }
 }

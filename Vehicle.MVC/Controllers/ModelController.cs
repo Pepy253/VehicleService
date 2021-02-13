@@ -4,19 +4,26 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Vehicle.Service.Interfaces;
 using Vehicle.Service.Models;
+using AutoMapper;
+using Vehicle.MVC.ViewModels;
+using System.Collections.Generic;
+using System.Linq;
+using PagedList;
 
 namespace Vehicle.MVC.Controllers
 {
     public class ModelController: Controller
     {
         private readonly IVehicleModelService _service;
+        private readonly IMapper _mapper;
 
-        public ModelController(IVehicleModelService service)
+        public ModelController(IVehicleModelService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
 
         }
-        // GET: Make
+
         public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
             ViewBag.CurrentSort = sortOrder;
@@ -36,82 +43,98 @@ namespace Vehicle.MVC.Controllers
             ViewBag.CurrentFilter = searchString;
 
             int pageNumber = (page ?? 1);
-            int pageSize = 5;
 
-            return View(await _service.GetFilterAndSort(sortOrder, searchString, pageNumber, pageSize));
+            var models = await _service.Find(sortOrder, searchString, pageNumber);
+            var modelsVM = _mapper.Map<IEnumerable<VehicleModel>, IEnumerable<VehicleModelViewModel>>(models.ToArray());
+            var pagedModelsVM = new StaticPagedList<VehicleModelViewModel>(modelsVM, models.GetMetaData());
+
+            Response.StatusCode = 200;
+            return View(pagedModelsVM);
         }
-
+        [HttpGet]
         public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
             {
+                Response.StatusCode = 404;
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var vehicleModel = await _service.GetByIdAsync(id);
+            VehicleModelViewModel modelVM = _mapper.Map<VehicleModelViewModel>(await _service.GetByIdAsync(id));
 
-            if (vehicleModel == null)
+            if (modelVM == null)
             {
+                Response.StatusCode = 404;
                 return HttpNotFound();
             }
 
-            return View(vehicleModel);
+            return View(modelVM);
         }
-
+        [HttpGet]
         public async Task<ActionResult> Create()
         {
-            var makes = await _service.GetMakes();
+            var makes = _mapper.Map<IEnumerable<VehicleMakeViewModel>>(await _service.GetMakes());
 
             var makeList = new SelectList(makes, "Id", "Name");
 
             ViewBag.MakesList = makeList;
-
+            
+            Response.StatusCode = 200;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(VehicleModel vehicleModel)
+        public async Task<ActionResult> Create(VehicleModelViewModel modelVM)
         {
             if (ModelState.IsValid)
             {
+                var vehicleModel = _mapper.Map<VehicleModel>(modelVM);
+                
                 await Task.Run(() => _service.CreateAsync(vehicleModel));
 
+                Response.StatusCode = 201;
                 return RedirectToAction("Index");
             }
             else
             {
+                Response.StatusCode = 400;
                 ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
 
                 return View();
             }
         }
+        [HttpGet]
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
             {
+                Response.StatusCode = 404;
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var makes = await _service.GetMakes();
-
+            var makes = _mapper.Map<IEnumerable<VehicleMakeViewModel>>(await _service.GetMakes());
             var makeList = new SelectList(makes, "Id", "Name");
 
             ViewBag.MakesList = makeList;
 
-            return View(await _service.GetByIdAsync(id));
+            var makeVM = _mapper.Map<VehicleModelViewModel>(await _service.GetByIdAsync(id));
+
+            Response.StatusCode = 200;
+            return View(makeVM);
         }
 
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditPost(int? id)
+        public async Task<ActionResult> EditPost(VehicleModelViewModel modelVM, int? id)
         {
             if (id == null)
             {
+                Response.StatusCode = 404;
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var modelToUpdate = await _service.GetByIdAsync(id);
+            var modelToUpdate = _mapper.Map<VehicleModel>(modelVM);
 
             if (TryUpdateModel(modelToUpdate))
             {
@@ -119,38 +142,48 @@ namespace Vehicle.MVC.Controllers
                 {
                     await Task.Run(() => _service.UpdateAsync(modelToUpdate));
 
+                    Response.StatusCode = 200;
                     return RedirectToAction("Index");
                 }
                 catch
                 {
+                    Response.StatusCode = 400;
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
                 }
             }
 
             return View();
         }
+        [HttpGet]
         public async Task<ActionResult> Delete(int? id)
         {
             if (id == null)
             {
+                Response.StatusCode = 404;
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View(await _service.GetByIdAsync(id));
+            var makeVM = _mapper.Map<VehicleModelViewModel>(await _service.GetByIdAsync(id));
+
+            Response.StatusCode = 200;
+            return View(makeVM);
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Delete(int id, VehicleModel vehicleModel)
+        public async Task<ActionResult> Delete(int id)
         {
             try
-            {
-                vehicleModel = await _service.GetByIdAsync(id);
+            { 
+                var vehicleModel = await _service.GetByIdAsync(id);
                 await Task.Run(() => _service.DeleteAsync(vehicleModel));
 
+                Response.StatusCode = 200;
                 return RedirectToAction("Index");
             }
             catch
             {
+                ModelState.AddModelError("", "Unable to delete. Try again, and if the problem persists, see your system administrator.");
+
+                Response.StatusCode = 400;
                 return View();
             }
         }

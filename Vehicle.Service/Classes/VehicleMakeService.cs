@@ -13,10 +13,16 @@ namespace Vehicle.Service.Classes
     public class VehicleMakeService : IVehicleMakeService
     {
         private readonly VehicleDbContext _context;
+        private readonly IMakeSort _sort;
+        private readonly IMakeFilter _filter;
+        private readonly IMakePage _page;
 
-        public VehicleMakeService(VehicleDbContext context)
+        public VehicleMakeService(VehicleDbContext context, IMakeFilter filter, IMakeSort sort, IMakePage page)
         {
             _context = context;
+            _sort = sort;
+            _filter = filter;
+            _page = page;
         }
 
         public async void CreateAsync(VehicleMake vehicleMake)
@@ -42,26 +48,12 @@ namespace Vehicle.Service.Classes
             return  await _context.VehicleMakes.FindAsync(id);
         }
 
-        public async Task<IPagedList<VehicleMake>> GetFilterAndSort(string sortOrder, string searchString, int pageNumber, int pageSize)
+        public async Task<IPagedList<VehicleMake>> Find(string sortOrder, string searchString, int pageNumber)
         {
             var vehicleMakes = _context.VehicleMakes.Select(ma => ma);
-
-            if (!String.IsNullOrEmpty(searchString))
-            { 
-                vehicleMakes = vehicleMakes.Where(ma => ma.Name.Contains(searchString));
-            }
-
-            switch (sortOrder)
-            {
-                case "make_name_desc":
-                    vehicleMakes = vehicleMakes.OrderByDescending(ma => ma.Name);
-                    break;
-                default:
-                    vehicleMakes = vehicleMakes.OrderBy(ma => ma.Name);
-                    break;
-            }
-
-            var pagedList = await vehicleMakes.ToPagedListAsync(pageNumber, pageSize);
+            var filteredMakes = _filter.GetFilter(vehicleMakes, searchString);
+            var sortedMakes = _sort.GetSort(filteredMakes, sortOrder);
+            var pagedList = await _page.GetPagedListAsync(sortedMakes, pageNumber);
 
             return pagedList;
         }

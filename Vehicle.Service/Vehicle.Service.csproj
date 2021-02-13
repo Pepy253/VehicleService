@@ -60,9 +60,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\MakePage.cs" />
+    <Compile Include="Classes\MakeFilter.cs" />
+    <Compile Include="Classes\MakeSort.cs" />
+    <Compile Include="Classes\ModelFilter.cs" />
+    <Compile Include="Classes\ModelPage.cs" />
+    <Compile Include="Classes\ModelSort.cs" />
     <Compile Include="Classes\VehicleMakeService.cs" />
     <Compile Include="Classes\VehicleModelService.cs" />
     <Compile Include="Data\VehicleDbContext.cs" />
+    <Compile Include="Interfaces\IMakeFilter.cs" />
+    <Compile Include="Interfaces\IMakePage.cs" />
+    <Compile Include="Interfaces\IMakeSort.cs" />
+    <Compile Include="Interfaces\IModelFilter.cs" />
+    <Compile Include="Interfaces\IModelPage.cs" />
+    <Compile Include="Interfaces\IModelSort.cs" />
     <Compile Include="Interfaces\IVehicleMakeService.cs" />
     <Compile Include="Interfaces\IVehicleModelService.cs" />
     <Compile Include="Models\VehicleMake.cs" />

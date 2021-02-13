@@ -1,7 +1,12 @@
-﻿using System;
+﻿using AutoMapper;
+using PagedList;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Vehicle.MVC.ViewModels;
 using Vehicle.Service.Interfaces;
 using Vehicle.Service.Models;
 
@@ -10,19 +15,22 @@ namespace Vehicle.MVC.Controllers
     public class MakeController : Controller
     {
         private readonly IVehicleMakeService _service;
+        private readonly IMapper _mapper;
 
-        public MakeController(IVehicleMakeService service)
+        public MakeController(IVehicleMakeService service, IMapper mapper)
         {
             _service = service;
-            
+            _mapper = mapper;
+
         }
-        // GET: Make
+
+        [HttpGet]
         public async Task<ActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
             ViewBag.CurrentSort = sortOrder;
             ViewBag.SortOrder = sortOrder;
             ViewBag.NameSortParam = String.IsNullOrEmpty(sortOrder) ? "make_name_desc" : "";
-            
+
             if (searchString != null)
             {
                 page = 1;
@@ -35,28 +43,35 @@ namespace Vehicle.MVC.Controllers
             ViewBag.CurrentFilter = searchString;
 
             int pageNumber = (page ?? 1);
-            int pageSize = 5;
+            var makes = await _service.Find(sortOrder, searchString, pageNumber);
+            var makesVM = _mapper.Map<IEnumerable<VehicleMake>, IEnumerable<VehicleMakeViewModel>>(makes.ToArray());
+            var pagedMakesVM = new StaticPagedList<VehicleMakeViewModel>(makesVM, makes.GetMetaData());
 
-            return View(await _service.GetFilterAndSort(sortOrder, searchString, pageNumber, pageSize));
+            Response.StatusCode = 200;
+            return View(pagedMakesVM);
         }
-
+        [HttpGet]       
         public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
             {
+                Response.StatusCode = 400;
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var vehicleMake = await _service.GetByIdAsync(id);
+            var vehicleMake = _mapper.Map<VehicleMakeViewModel>(await _service.GetByIdAsync(id));
 
             if (vehicleMake == null)
             {
+                Response.StatusCode = 404;
                 return HttpNotFound();
             }
 
+            Response.StatusCode = 200; 
             return View(vehicleMake);
         }
-
+        
+        [HttpGet]
         public ActionResult Create()
         { 
             return View();
@@ -64,41 +79,44 @@ namespace Vehicle.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(VehicleMake vehicleMake)
+        public async Task<ActionResult> Create(VehicleMakeViewModel makeVM)
         {
             if(ModelState.IsValid)
             {
+                var vehicleMake = _mapper.Map<VehicleMake>(makeVM);
                 await Task.Run(() => _service.CreateAsync(vehicleMake));
 
+                Response.StatusCode = 201;
                 return RedirectToAction("Index");
             }
             else
             {
                 ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
-                
+
+                Response.StatusCode = 400;
                 return View();
             }
         }
+        [HttpGet]
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
             {
+                Response.StatusCode = 404;
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View(await _service.GetByIdAsync(id));
+            var makeVM = _mapper.Map<VehicleMakeViewModel>(await _service.GetByIdAsync(id));
+
+            return View(makeVM);
         }
 
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditPost(int? id)
+        public async Task<ActionResult> EditPost(VehicleMakeViewModel modelVM)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
 
-            var makeToUpdate = await _service.GetByIdAsync(id);
+            var makeToUpdate = _mapper.Map<VehicleMake>(modelVM);
 
             if (TryUpdateModel(makeToUpdate))
             {
@@ -106,34 +124,41 @@ namespace Vehicle.MVC.Controllers
                 {
                     await Task.Run(() => _service.UpdateAsync(makeToUpdate));
 
+                    Response.StatusCode = 200;
                     return RedirectToAction("Index");
                 }
                 catch 
                 {
+                    Response.StatusCode = 400;
                     ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");                   
                 }
             }
 
             return View();
         }
-
+        [HttpGet]
         public async Task<ActionResult> Delete(int? id)
         {
-            return View(await _service.GetByIdAsync(id));
+            var makeVM = _mapper.Map<VehicleMakeViewModel>(await _service.GetByIdAsync(id));
+
+            Response.StatusCode = 200;
+            return View(makeVM);
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Delete(int id, VehicleMake vehicleMake)
+        public async Task<ActionResult> Delete(int id)
         {
             try
             {
-                vehicleMake = await _service.GetByIdAsync(id);
+                var vehicleMake = await _service.GetByIdAsync(id);
                 await Task.Run(() => _service.DeleteAsync(vehicleMake));
 
+                Response.StatusCode = 200;
                 return RedirectToAction("Index");
             }
             catch
             {
+                Response.StatusCode = 400;
+                ModelState.AddModelError("", "Unable to delete. Try again, and if the problem persists, see your system administrator.");
                 return View();
             }
         }

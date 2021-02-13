@@ -47,7 +47,6 @@ namespace Vehicle.MVC.App_Start
             {
                 kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
                 kernel.Bind<IHttpModule>().To<HttpApplicationInitializationHttpModule>();
-                kernel.Load(new AutoMapperConfig.AutoMapperModule());
                 RegisterServices(kernel);
                 return kernel;
             }
@@ -66,6 +65,13 @@ namespace Vehicle.MVC.App_Start
         {
             kernel.Bind<IVehicleMakeService>().To<VehicleMakeService>();
             kernel.Bind<IVehicleModelService>().To<VehicleModelService>();
+            kernel.Bind<IMakeSort>().To<MakeSort>();
+            kernel.Bind<IModelSort>().To<ModelSort>();
+            kernel.Bind<IMakeFilter>().To<MakeFilter>();
+            kernel.Bind<IModelFilter>().To<ModelFilter>();
+            kernel.Bind<IMakePage>().To<MakePage>();
+            kernel.Bind<IModelPage>().To<ModelPage>();
+            kernel.Load(new AutoMapperConfig.AutoMapperModule());
         }
     }
 }
