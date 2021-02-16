@@ -12,7 +12,6 @@ namespace Vehicle.MVC.ViewModels
         public int Id { get; set; }
         [Display(Name = "Make")]
         [Required(ErrorMessage = "Make name is required!")]
-        [Remote("NameExists", "Model", ErrorMessage = "This Model already exists")]
         public string Name { get; set; }
         [Display(Name = "Abbreviation")]
         [Required(ErrorMessage = "Abbrevation is required!")]
