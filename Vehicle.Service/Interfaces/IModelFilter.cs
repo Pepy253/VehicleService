@@ -9,6 +9,7 @@ namespace Vehicle.Service.Interfaces
 {
     public interface IModelFilter
     {
-        IQueryable<VehicleModel> GetFilter(IQueryable<VehicleModel> vehicleModels, string searchString);
+        string SearchString { get; set; }
+        IQueryable<VehicleModel> GetFilter(IQueryable<VehicleModel> vehicleModels);
     }
 }

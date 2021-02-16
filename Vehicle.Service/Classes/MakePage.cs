@@ -12,10 +12,17 @@ namespace Vehicle.Service.Classes
 {
     public class MakePage : IMakePage
     {
-        public async Task<IPagedList<VehicleMake>> GetPagedListAsync(IQueryable<VehicleMake> vehicleMakes, int? page)
+        public int Page { get; set; }
+
+        public MakePage(int page)
+        {
+            Page = page;
+        }
+
+        public async Task<IPagedList<VehicleMake>> GetPagedListAsync(IQueryable<VehicleMake> vehicleMakes)
         {
             int pageSize = 5;
-            var pagedList = await vehicleMakes.ToPagedListAsync(page ?? 1, pageSize);
+            var pagedList = await vehicleMakes.ToPagedListAsync(Page, pageSize);
 
             return pagedList;
         }

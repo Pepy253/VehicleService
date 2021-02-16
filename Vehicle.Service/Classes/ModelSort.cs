@@ -10,25 +10,32 @@ namespace Vehicle.Service.Classes
 {
     public class ModelSort : IModelSort
     {
-        public IQueryable<VehicleModel> GetSort(IQueryable<VehicleModel> models, string sortOrder)
+        public string SortOrder { get; set; }
+
+        public ModelSort(string sortOrder)
         {
-            switch (sortOrder)
+            SortOrder = sortOrder;
+        }
+
+        public IQueryable<VehicleModel> GetSort(IQueryable<VehicleModel> vehicleModels)
+        {
+            switch (SortOrder)
             {
                 case "make_name_desc":
-                    models = models.OrderByDescending(ma => ma.VehicleMake.Name);
+                    vehicleModels = vehicleModels.OrderByDescending(ma => ma.VehicleMake.Name);
                     break;
                 case "model_name":
-                    models = models.OrderBy(mo => mo.Name);
+                    vehicleModels = vehicleModels.OrderBy(mo => mo.Name);
                     break;
                 case "model_name_desc":
-                    models = models.OrderByDescending(mo => mo.Name);
+                    vehicleModels = vehicleModels.OrderByDescending(mo => mo.Name);
                     break;
                 default:
-                    models = models.OrderBy(ma => ma.VehicleMake.Name);
+                    vehicleModels = vehicleModels.OrderBy(ma => ma.VehicleMake.Name);
                     break;                    
             }
 
-            return models;
+            return vehicleModels;
         }
     }
 }

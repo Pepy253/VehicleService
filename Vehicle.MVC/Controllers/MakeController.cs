@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Vehicle.MVC.ViewModels;
+using Vehicle.Service.Classes;
 using Vehicle.Service.Interfaces;
 using Vehicle.Service.Models;
 
@@ -42,8 +43,13 @@ namespace Vehicle.MVC.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            int pageNumber = (page ?? 1);
-            var makes = await _service.Find(sortOrder, searchString, pageNumber);
+            int pageNum = page ?? 1;
+            
+            IMakeFilter makeFilter = new MakeFilter(searchString);
+            IMakeSort makeSort = new MakeSort(sortOrder);
+            IMakePage makePage = new MakePage(pageNum);
+
+            var makes = await _service.Find(makeFilter, makeSort, makePage);
             var makesVM = _mapper.Map<IEnumerable<VehicleMake>, IEnumerable<VehicleMakeViewModel>>(makes.ToArray());
             var pagedMakesVM = new StaticPagedList<VehicleMakeViewModel>(makesVM, makes.GetMetaData());
 

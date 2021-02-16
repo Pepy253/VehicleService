@@ -10,6 +10,7 @@ namespace Vehicle.Service.Interfaces
 {
     public interface IMakePage
     {
-        Task<IPagedList<VehicleMake>> GetPagedListAsync(IQueryable<VehicleMake> vehicleMakes, int? page);
+        int Page { get; set; }
+        Task<IPagedList<VehicleMake>> GetPagedListAsync(IQueryable<VehicleMake> vehicleMakes);
     }
 }

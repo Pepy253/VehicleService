@@ -14,16 +14,10 @@ namespace Vehicle.Service.Classes
     public class VehicleModelService : IVehicleModelService
     {
         private readonly VehicleDbContext _context;
-        private readonly IModelFilter _filter;
-        private readonly IModelSort _sort;
-        private readonly IModelPage _page;
 
-        public VehicleModelService(VehicleDbContext context, IModelFilter filter, IModelSort sort, IModelPage page)
+        public VehicleModelService(VehicleDbContext context)
         {
             _context = context;
-            _filter = filter;
-            _sort = sort;
-            _page = page;
         }
 
         public async void CreateAsync(VehicleModel vehicleModel)
@@ -49,12 +43,12 @@ namespace Vehicle.Service.Classes
             return await _context.VehicleModels.Include(ma => ma.VehicleMake).FirstOrDefaultAsync(mo => mo.Id == id);
         }
 
-        public async Task<IPagedList<VehicleModel>> Find(string sortOrder, string searchString, int pageNumber)
+        public async Task<IPagedList<VehicleModel>> Find(IModelFilter modelFilter, IModelSort modelSort, IModelPage modelPage)
         {
             var vehicleModels = _context.VehicleModels.Include(ma => ma.VehicleMake).Select(mo => mo);
-            var filteredModels = _filter.GetFilter(vehicleModels, searchString);
-            var sortedModels = _sort.GetSort(filteredModels, sortOrder);
-            var pagedList = await _page.GetPagedListAsync(sortedModels, pageNumber);
+            var filteredModels = modelFilter.GetFilter(vehicleModels);
+            var sortedModels = modelSort.GetSort(filteredModels);
+            var pagedList = await modelPage.GetPagedListAsync(sortedModels);
 
             return pagedList;
         }

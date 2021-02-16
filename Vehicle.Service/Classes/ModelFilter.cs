@@ -10,15 +10,22 @@ namespace Vehicle.Service.Classes
 {
     public class ModelFilter : IModelFilter
     {
-        public IQueryable<VehicleModel> GetFilter(IQueryable<VehicleModel> models, string searchString)
+        public string SearchString { get; set; }
+
+        public ModelFilter(string searchString)
         {
-            if (!String.IsNullOrEmpty(searchString))
+            SearchString = searchString;
+        }
+
+        public IQueryable<VehicleModel> GetFilter(IQueryable<VehicleModel> vehicleModels)
+        {
+            if (!String.IsNullOrEmpty(SearchString))
             {
-                models = models.Where(mo => mo.Name.ToUpper() == searchString.ToUpper()
-                        || mo.VehicleMake.Name.ToUpper() == searchString.ToUpper());
+                vehicleModels = vehicleModels.Where(mo => mo.Name.ToUpper() == SearchString.ToUpper()
+                        || mo.VehicleMake.Name.ToUpper() == SearchString.ToUpper());
             }
 
-            return models;
+            return vehicleModels;
         }
     }
 }

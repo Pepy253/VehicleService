@@ -9,6 +9,7 @@ namespace Vehicle.Service.Interfaces
 {
     public interface IMakeSort
     {
-        IQueryable<VehicleMake> GetSort(IQueryable<VehicleMake> vehicleMakes, string sortOrder);
+        string SortOrder { get; set; }
+        IQueryable<VehicleMake> GetSort(IQueryable<VehicleMake> vehicleMakes);
     }
 }

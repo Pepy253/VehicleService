@@ -9,6 +9,7 @@ using Vehicle.MVC.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using PagedList;
+using Vehicle.Service.Classes;
 
 namespace Vehicle.MVC.Controllers
 {
@@ -42,9 +43,14 @@ namespace Vehicle.MVC.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            int pageNumber = (page ?? 1);
+            int pageNum = (page ?? 1);
 
-            var models = await _service.Find(sortOrder, searchString, pageNumber);
+            IModelFilter modelFilter = new ModelFilter(searchString);
+            IModelSort modelSort = new ModelSort(sortOrder);
+            IModelPage modelPage = new ModelPage(pageNum);
+
+
+            var models = await _service.Find(modelFilter, modelSort, modelPage);
             var modelsVM = _mapper.Map<IEnumerable<VehicleModel>, IEnumerable<VehicleModelViewModel>>(models.ToArray());
             var pagedModelsVM = new StaticPagedList<VehicleModelViewModel>(modelsVM, models.GetMetaData());
 

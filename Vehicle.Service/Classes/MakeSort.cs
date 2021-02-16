@@ -11,10 +11,17 @@ namespace Vehicle.Service.Classes
 {
     public class MakeSort : IMakeSort
     {
-        public IQueryable<VehicleMake> GetSort(IQueryable<VehicleMake> vehicleMakes, string sortOrder)
+        public string SortOrder { get; set; }
+
+        public MakeSort(string sortOrder)
+        {
+            SortOrder = sortOrder;
+        }
+
+        public IQueryable<VehicleMake> GetSort(IQueryable<VehicleMake> vehicleMakes)
         {
 
-            switch (sortOrder)
+            switch (SortOrder)
             {
                 case "make_name_desc":
                     vehicleMakes = vehicleMakes.OrderByDescending(ma => ma.Name);

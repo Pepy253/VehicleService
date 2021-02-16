@@ -10,11 +10,18 @@ namespace Vehicle.Service.Classes
 {
     public class MakeFilter : IMakeFilter
     {
-        public IQueryable<VehicleMake> GetFilter(IQueryable<VehicleMake> vehicleMakes, string searchString)
+        public string SearchString { get; set; }
+
+        public MakeFilter(string searchString)
         {
-            if (!String.IsNullOrEmpty(searchString))
+            SearchString = searchString;
+        }
+
+        public IQueryable<VehicleMake> GetFilter(IQueryable<VehicleMake> vehicleMakes)
+        {
+            if (!String.IsNullOrEmpty(SearchString))
             {
-                vehicleMakes = vehicleMakes.Where(ma => ma.Name.ToUpper() == searchString.ToUpper());
+                vehicleMakes = vehicleMakes.Where(ma => ma.Name.ToUpper() == SearchString.ToUpper());
             }
 
             return vehicleMakes; 

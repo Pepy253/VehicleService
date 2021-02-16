@@ -65,12 +65,12 @@ namespace Vehicle.MVC.App_Start
         {
             kernel.Bind<IVehicleMakeService>().To<VehicleMakeService>();
             kernel.Bind<IVehicleModelService>().To<VehicleModelService>();
-            kernel.Bind<IMakeSort>().To<MakeSort>();
-            kernel.Bind<IModelSort>().To<ModelSort>();
-            kernel.Bind<IMakeFilter>().To<MakeFilter>();
-            kernel.Bind<IModelFilter>().To<ModelFilter>();
-            kernel.Bind<IMakePage>().To<MakePage>();
-            kernel.Bind<IModelPage>().To<ModelPage>();
+            kernel.Bind<IMakeSort>().To<MakeSort>().WithConstructorArgument("sortOrder") ;
+            kernel.Bind<IModelSort>().To<ModelSort>().WithConstructorArgument("sortOrder");
+            kernel.Bind<IMakeFilter>().To<MakeFilter>().WithConstructorArgument("searchString");
+            kernel.Bind<IModelFilter>().To<ModelFilter>().WithConstructorArgument("searchString");
+            kernel.Bind<IMakePage>().To<MakePage>().WithConstructorArgument("page");
+            kernel.Bind<IModelPage>().To<ModelPage>().WithConstructorArgument("page");
             kernel.Load(new AutoMapperConfig.AutoMapperModule());
         }
     }

@@ -9,6 +9,7 @@ namespace Vehicle.Service.Interfaces
 {
     public interface IMakeFilter
     {
-        IQueryable<VehicleMake> GetFilter(IQueryable<VehicleMake> makes, string searchString);
+        string SearchString { get; set; }
+        IQueryable<VehicleMake> GetFilter(IQueryable<VehicleMake> makes);
     }
 }
